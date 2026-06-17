@@ -233,6 +233,79 @@ Configure Nginx so that:
 - `http://<Target-Server-IP>/foodhub` opens the FoodHub website
 - `http://<Target-Server-IP>/shopease` opens the ShopEase website without using different ports.
 
+## Pipeline Implementation & Expected Output
+
+The repository includes a fully configured [Jenkinsfile](file:///c:/srj412305_workspace/jenkins/jenkins-depolyment/Jenkinsfile) that automates the deployment of both the **FoodHub** and **ShopEase** web applications onto a single target server. Below is a breakdown of the pipeline structure, configuration, and expected deployment output.
+
+### 1. Pipeline Environment Configuration
+
+The pipeline defines the following environment variables:
+
+| Variable Name | Value | Description |
+| :--- | :--- | :--- |
+| `SERVER_IP` | `172.31.89.103` | IP address of the target server where Nginx is hosted. |
+| `SSH_CREDENTIAL` | `node-app-ssh-key` | Jenkins credential ID containing the private key for SSH/SCP authentication. |
+| `REPO_SHOPEASE` | `https://github.com/surajjagtap221/ShopEase-Website.git` | Source repository URL for the ShopEase application. |
+| `REPO_FOODHUB` | `https://github.com/surajjagtap221/FoodHub-Restaurant-Website.git` | Source repository URL for the FoodHub application. |
+| `BRANCH` | `main` | Target Git branch to clone for both repositories. |
+| `REMOTE_USER` | `ubuntu` | SSH user profile on the target server. |
+| `REMOTE_PATH` | `/home/ubuntu/code` | Target staging directory on the remote server. |
+| `REMOTE_PATH_SHOPEASE` | `/home/ubuntu/code/shopease` | Subdirectory for ShopEase files on the remote server. |
+| `REMOTE_PATH_FOODHUB` | `/home/ubuntu/code/foodhub` | Subdirectory for FoodHub files on the remote server. |
+
+---
+
+### 2. Stages Execution Flow
+
+The pipeline executes sequentially in three primary stages:
+
+#### **Stage 1: Clone Repositories**
+* **Action:** Clones the repositories into dedicated subdirectories within the Jenkins workspace:
+  * ShopEase is cloned into `./shopease`
+  * FoodHub is cloned into `./foodhub`
+* **Log Verification:** Runs `ls -R` to recursively list the cloned structure and verify the repository files.
+
+#### **Stage 2: Upload Files to target-server**
+* **Action:** Uses `sshagent` with `node-app-ssh-key` to securely:
+  1. Create the staging directory `/home/ubuntu/code` on the target server.
+  2. Clear any old deployment files from `/home/ubuntu/code/*`.
+  3. Transfer the entire workspace contents (both directories) using `scp -r` to the staging directory `/home/ubuntu/code/`.
+
+#### **Stage 3: Install Dependencies & Start App on the target server**
+* **Action:** Accesses the target server via SSH to execute setup and hosting scripts:
+  1. Installs and configures Nginx server (`sudo apt update && sudo apt install -y nginx`).
+  2. Stops any running Apache server to prevent port conflicts (`sudo systemctl stop apache2`).
+  3. Clears the default Nginx webroot directory (`sudo rm -rf /var/www/html/*`).
+  4. Configures and runs Nginx (`sudo systemctl enable nginx && sudo systemctl start nginx`).
+  5. Copies the staged application directories (`shopease` and `foodhub`) directly into the webroot:
+     ```bash
+     sudo cp -r /home/ubuntu/code/* /var/www/html/
+     ```
+  6. Recursively lists `/var/www/html/` to ensure all files are in place, and restarts Nginx (`sudo systemctl restart nginx`).
+
+---
+
+### 3. Expected Output & Access URLs
+
+Upon successful execution of the Jenkins pipeline:
+
+> [!NOTE]
+> Since the applications are copied from `/home/ubuntu/code/*` to `/var/www/html/`, Nginx automatically hosts both static applications concurrently on Port 80 via subdirectory routing.
+
+* **Deployment Paths on Target Server:**
+  * **ShopEase Web App:** `/var/www/html/shopease/`
+  * **FoodHub Web App:** `/var/www/html/foodhub/`
+
+* **Expected Access URLs:**
+  * **ShopEase Home:** `http://172.31.89.103/shopease/`
+  * **FoodHub Home:** `http://172.31.89.103/foodhub/`
+
+* **Console Logs Notification:**
+  * **Success:** `✅ Application deployed successfully!`
+  * **Failure:** `❌ Deployment failed.`
+
+---
+
 ## Deliverables
 
 Students must submit:
