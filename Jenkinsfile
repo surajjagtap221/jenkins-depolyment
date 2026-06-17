@@ -49,7 +49,7 @@ pipeline {
                             sudo systemctl status nginx &&
                             sudo cp -r ${REMOTE_PATH}/* /var/www/html/ &&
                             cd /var/www/html/
-                            
+                            ls -R
                             sudo systemctl restart nginx 
                         '
                     """
