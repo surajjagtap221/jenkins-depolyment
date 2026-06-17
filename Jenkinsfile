@@ -45,6 +45,7 @@ pipeline {
                             cd ${REMOTE_PATH} &&
                             sudo apt update && sudo apt install -y nginx &&
                             sudo systemctl stop apache2 &&
+                            sudo rm -rf /var/www/html/* &&
                             sudo systemctl enable nginx &&
                             sudo systemctl start nginx &&
                             sudo systemctl status nginx &&
