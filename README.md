@@ -110,5 +110,8 @@
 - [ ] D. All stages are skipped but marked successful
 
 **Answer:** B. The pipeline stops execution
+ejgasbkjlnk;
+sjdvbhkb 
+shfdvbj
 
 ---
