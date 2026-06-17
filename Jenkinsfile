@@ -26,10 +26,10 @@ pipeline {
                     git branch: "${BRANCH}", url: "${REPO_FOODHUB}"
                 }
 
-                    sh 'ls -R'
+                sh 'ls -R'
             }
         }
-            
+
 
         stage('Upload Files to target-server') {
             steps {
