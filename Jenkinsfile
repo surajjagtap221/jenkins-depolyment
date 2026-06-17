@@ -16,13 +16,20 @@ pipeline {
     
     
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repositories') {
             steps {
-                git branch: "${BRANCH}", url: "${REPO_SHOPEASE}"
-                git branch: "${BRANCH}", url: "${REPO_FOODHUB}"
-                
+                dir('shopease') {
+                    git branch: "${BRANCH}", url: "${REPO_SHOPEASE}"
+                }
+
+                dir('foodhub') {
+                    git branch: "${BRANCH}", url: "${REPO_FOODHUB}"
+                }
+
+                    sh 'ls -R'
             }
         }
+            
 
         stage('Upload Files to target-server') {
             steps {
