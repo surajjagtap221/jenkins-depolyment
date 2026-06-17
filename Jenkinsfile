@@ -8,7 +8,7 @@ pipeline {
         REPO_FOODHUB   = 'https://github.com/surajjagtap221/FoodHub-Restaurant-Website.git'
         BRANCH         = 'main'
         REMOTE_USER    = 'ubuntu'
-        REMOTE_PATH    = '/home/ubuntu/code/'
+        REMOTE_PATH    = '/home/ubuntu/code'
         REMOTE_PATH_SHOPEASE = '/home/ubuntu/code/shopease'
         REMOTE_PATH_FOODHUB = '/home/ubuntu/code/foodhub'
         
