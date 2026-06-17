@@ -9,6 +9,8 @@ pipeline {
         BRANCH         = 'main'
         REMOTE_USER    = 'ubuntu'
         REMOTE_PATH    = '/home/ubuntu/code/'
+        REMOTE_PATH_SHOPEASE = '/home/ubuntu/code/shopease'
+        REMOTE_PATH_FOODHUB = '/home/ubuntu/code/foodhub'
         
     }
     
@@ -18,6 +20,7 @@ pipeline {
             steps {
                 git branch: "${BRANCH}", url: "${REPO_SHOPEASE}"
                 git branch: "${BRANCH}", url: "${REPO_FOODHUB}"
+                
             }
         }
 
@@ -25,7 +28,8 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIAL]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} 'mkdir -p ${REMOTE_PATH}'
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} 'mkdir -p ${REMOTE_PATH} && rm -rf ${REMOTE_PATH}/*'
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} 'mkdir -p ${REMOTE_PATH_SHOPEASE} $ && mkdir -p ${REMOTE_PATH_FOODHUB}'
                         scp -o StrictHostKeyChecking=no -r * ${REMOTE_USER}@${SERVER_IP}:${REMOTE_PATH}/
                     """
                 }
@@ -40,10 +44,10 @@ pipeline {
                             cd ${REMOTE_PATH} &&
                             sudo apt update && sudo apt install -y nginx &&
                             sudo systemctl enable --now nginx &&
+                            sudo systemctl status nginx &&
                             sudo cp -r ${REMOTE_PATH}/* /var/www/html/ &&
                             cd /var/www/html/
-                            sudo mv FoodHub-Restaurant-Website foodhub &&
-                            sudo mv ShopEase-Website shopease &&
+                            
                             sudo systemctl restart nginx 
                         '
                     """
