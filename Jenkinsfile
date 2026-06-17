@@ -44,6 +44,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} '
                             cd ${REMOTE_PATH} &&
                             sudo apt update && sudo apt install -y nginx &&
+                            sudo systemctl stop apache2 &&
                             sudo systemctl enable nginx &&
                             sudo systemctl start nginx &&
                             sudo systemctl status nginx &&
